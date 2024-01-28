@@ -6,6 +6,8 @@ const App = () => {
   const [sections, setSections] = useState([
     `c26360b4-b28e-41c1-a371-8fb4d1528aa2`,]);
 
+    const typesOfSections = [`photo`, `heading`, `paragraph`, `link`]
+
   const addSection = (e: any) => {
     e.preventDefault();
     const myUUID = uuidv4();
@@ -53,9 +55,19 @@ myArray = x
         <button onClick={() => setEdit(false)}>preview</button>
         <button onClick={() => setEdit(false)}>save</button>
       </div>
-
+      <div>
+        <h1>sections types</h1>
+        {typesOfSections.map((section) => (
+        <button>{section}</button>
+      ))}
+      </div>
       <div className="container">
         <button onClick={(e: any) => addSection(e)}>add section</button>
+        <p>show popup when we click add section</p>
+        <p>in the popup we will ask to choose type</p>
+        <p>then we will display the field</p>
+        <p>if photot they can upload and we will add it there once we save</p>
+        <p>they will then be avle to edit it after saved an shit</p>
       </div>
       {sections.map((section) => (
         <div style={{border:`1px solid black`, padding:`5px`}}>
