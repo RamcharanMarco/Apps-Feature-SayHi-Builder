@@ -3,80 +3,227 @@ import { v4 as uuidv4 } from "uuid";
 
 const App = () => {
   const [edit, setEdit] = useState(true);
-  const [sections, setSections] = useState([
-    `c26360b4-b28e-41c1-a371-8fb4d1528aa2`,]);
+  const [showAddSectionModal, setShowAddSectionModal] = useState(false);
+  const [addPosition, setAddPosition] = useState(0);
+  const [sectionType, setSectionType] = useState(`para`);
+  const [paraContent, setParaContent] = useState(``);
+  const [linkContent, setLinkContent] = useState(``);
+  const [headingContent, setHeadingContent] = useState(``);
+  const [photoContent, setPhotoContent] = useState(``);
 
-    const typesOfSections = [`photo`, `heading`, `paragraph`, `link`]
+  const [sections, setSections] = useState<any>([
+    { id: `uuid`, type: "heading", content: "this is my heading", position: 1 },
+  ]);
 
-  const addSection = (e: any) => {
+  const typesOfSections = [`photo`, `heading`, `para`, `link`];
+
+  const addSection = (e: any, type: string, content: string) => {
     e.preventDefault();
+    const newPosition: number = sections[sections.length - 1].position + 1;
     const myUUID = uuidv4();
-    setSections((prev) => [...prev, myUUID]);
+    let obj = {
+      id: myUUID,
+      type: type,
+      content: content,
+      position: newPosition,
+    };
+    setSections((prev: any) => [...prev, obj]);
+    setShowAddSectionModal(false);
   };
 
-  const deleteSection = (e: any, sec:string) => {
+  const deleteSection = (e: any, sec: string) => {
     e.preventDefault();
-    const newSections = sections.filter( section => section !== sec)
+    const newSections = sections.filter((section: any) => section !== sec);
     setSections(() => [...newSections]);
   };
 
-  const setPositionMinus1 = (e: any, sec:string) => {
+  const moveUp = (e: any, id: string, cp: number) => {
     e.preventDefault();
-    setSections((prev) => [sec, ...prev])
-  };
-
-
-let myArray = [1, 2, 3, 4, 5];
-const indexToMove = 2;
-const newPosition = 4;
-let x = moveElementInArray(myArray, indexToMove, newPosition);
-myArray = x
-
-  function moveElementInArray(array:any, indexToMove:any, newPosition:any) {
-    return array.map((element:any, index:any) => {
-      if (index === indexToMove) {
-        return array[newPosition];
-      } else if (index === newPosition) {
-        return array[indexToMove];
+    const newp = cp - 1;
+    console.log(`section id: `, id);
+    console.log(`current section position: `, cp);
+    const newList = sections.map((element: any) => {
+      if (element.position === newp) {
+        return { ...element, position: cp };
+      }
+      if (element.id === id) {
+        return { ...element, position: newp };
       } else {
         return element;
       }
     });
-  }
 
+    newList.sort((a: any, b: any) => a.position - b.position);
 
+    setSections([...newList]);
+  };
+
+  const moveDown = (e: any, id: string, cp: number) => {
+    e.preventDefault();
+    const newp = cp + 1;
+    console.log(`section id: `, id);
+    console.log(`current section position: `, cp);
+    const newList = sections.map((element: any) => {
+      if (element.position === newp) {
+        return { ...element, position: cp };
+      }
+      if (element.id === id) {
+        return { ...element, position: newp };
+      } else {
+        return element;
+      }
+    });
+
+    newList.sort((a: any, b: any) => a.position - b.position);
+
+    setSections([...newList]);
+  };
 
   return (
     <div className="app">
-      <h1>edit mode</h1>
-      {edit ? <p>edit mode true</p> : <p>preview mode</p>}
-      <div>
+      {showAddSectionModal ? (
+        <div className="popup">
+          <button onClick={() => setShowAddSectionModal(false)}>close</button>
+          <h1>add section</h1>
+          <p>choose type</p>
+          {typesOfSections.map((section) => (
+            <button key={section} onClick={() => setSectionType(section)}>
+              {section}
+            </button>
+          ))}
+          <hr />
+          {sectionType === `para` ? (
+            <div>
+              <p>paragraph</p>
+              <textarea
+                value={paraContent}
+                onChange={(e) => setParaContent(e.target.value)}
+              ></textarea>
+              <button
+                onClick={(e) => {
+                  addSection(e, `para`, paraContent);
+                }}
+              >
+                save
+              </button>
+            </div>
+          ) : sectionType === `link` ? (
+            <div>
+              <p>link</p>
+              <textarea
+                value={linkContent}
+                onChange={(e) => setLinkContent(e.target.value)}
+              ></textarea>
+              <button
+                onClick={(e) => {
+                  addSection(e, `link`, linkContent);
+                }}
+              >
+                save
+              </button>
+            </div>
+          ) : sectionType === `heading` ? (
+            <div>
+              <p>heading</p>
+              <textarea
+                value={headingContent}
+                onChange={(e) => setHeadingContent(e.target.value)}
+              ></textarea>
+              <button
+                onClick={(e) => {
+                  addSection(e, `heading`, headingContent);
+                }}
+              >
+                save
+              </button>
+            </div>
+          ) : sectionType === `photo` ? (
+            <div>
+              <p>photo</p>
+              <textarea
+                value={photoContent}
+                onChange={(e) => setPhotoContent(e.target.value)}
+              ></textarea>
+              <button
+                onClick={(e) => {
+                  addSection(e, `photo`, photoContent);
+                }}
+              >
+                save
+              </button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+      <div className="nav">
         <button onClick={() => setEdit(true)}>edit</button>
         <button onClick={() => setEdit(false)}>preview</button>
         <button onClick={() => setEdit(false)}>save</button>
-      </div>
-      <div>
-        <h1>sections types</h1>
-        {typesOfSections.map((section) => (
-        <button>{section}</button>
-      ))}
+        {edit ? <p>edit mode true</p> : <p>preview mode</p>}
       </div>
       <div className="container">
-        <button onClick={(e: any) => addSection(e)}>add section</button>
-        <p>show popup when we click add section</p>
-        <p>in the popup we will ask to choose type</p>
-        <p>then we will display the field</p>
-        <p>if photot they can upload and we will add it there once we save</p>
-        <p>they will then be avle to edit it after saved an shit</p>
+        {sections.map((section: any) => (
+          <div
+            key={section.id}
+            style={{ border: `1px solid black`, padding: `5px` }}
+            className="center section"
+          >
+            <div className="hide-box">
+              <button
+                onClick={() => {
+                  setShowAddSectionModal(true),
+                    setAddPosition(section.position);
+                }}
+                className="hide"
+              >
+                add
+              </button>
+            </div>
+            <div className="section-content">
+              <p>type: {section.type}</p>
+              {section.type === `para` ? (
+                <p>section: {section.content}</p>
+              ) : section.type === `heading` ? (
+                <h1>section: {section.content}</h1>
+              ) : section.type === `link` ? (
+                <a href={section.url}>{section.content}</a>
+              ) : (
+                <p>section: {section.content}</p>
+              )}
+              <p>section: {section.position}</p>
+              <button onClick={(e: any) => deleteSection(e, section)}>
+                delete
+              </button>
+              {section.position === 1 ? null : (
+                <button
+                  onClick={(e) => moveUp(e, section.id, section.position)}
+                >
+                  move up
+                </button>
+              )}
+              {section.position ===
+              sections[sections.length - 1].position ? null : (
+                <button
+                  onClick={(e) => moveDown(e, section.id, section.position)}
+                >
+                  move down
+                </button>
+              )}
+            </div>
+            <div className="hide-box">
+              <button
+                onClick={() => {
+                  setShowAddSectionModal(true),
+                    setAddPosition(section.position + 1);
+                }}
+                className="hide"
+              >
+                add
+              </button>
+            </div>{" "}
+          </div>
+        ))}
       </div>
-      {sections.map((section) => (
-        <div style={{border:`1px solid black`, padding:`5px`}}>
-        <p>{section}</p>
-        <input type="text" placeholder='content'/>
-        <button onClick={(e: any) => deleteSection(e, section)}>delete</button>
-        <button onClick={(e: any) => setPositionMinus1(e, section)}>move back</button>
-        </div>
-      ))}
     </div>
   );
 };
