@@ -10,6 +10,7 @@ const App = () => {
   const [linkContent, setLinkContent] = useState(``);
   const [headingContent, setHeadingContent] = useState(``);
   const [photoContent, setPhotoContent] = useState(``);
+  const [linkURL, setLinkURL] = useState(``)
 
   const [sections, setSections] = useState<any>([
     { id: `uuid`, type: "heading", content: "this is my heading", position: 1 },
@@ -113,6 +114,10 @@ const App = () => {
               <textarea
                 value={linkContent}
                 onChange={(e) => setLinkContent(e.target.value)}
+              ></textarea>
+                            <textarea
+                value={linkContent}
+                onChange={(e) => setLinkURL(e.target.value)}
               ></textarea>
               <button
                 onClick={(e) => {
